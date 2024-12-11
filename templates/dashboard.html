@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Semáforos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/dashboard.css') }}">
+    <script src="{{ url_for('static', filename='js/auto_semaforo.js') }}"></script>
+
+    <script>
+        async function updateLight(lightId, state) {
+            const response = await fetch(`/update-light/${lightId}/${state}`, { method: 'POST' });
+            const result = await response.json();
+            if (result.success) {
+                console.log(result.message);
+                location.reload();
+            } else {
+                console.log(result.message);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Tablero de Semáforos</h1>
+    <a href="/logout" style="text-decoration: none; color: red;">Cerrar Sesión</a>
+    <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+        {% for light, state in traffic_lights.items() %}
+            <div class="traffic-light">
+                <h3>{{ light }}</h3>
+                <div class="light-container">
+                    <div class="light red {% if state == 'red' %}active{% endif %}"></div>
+                    <div class="light yellow {% if state == 'yellow' %}active{% endif %}"></div>
+                    <div class="light green {% if state == 'green' %}active{% endif %}"></div>
+                </div>
+                <div class="button-container">
+                    <button onclick="updateLight('{{ light }}', 'red')">Rojo</button>
+                    <button onclick="updateLight('{{ light }}', 'yellow')">Amarillo</button>
+                    <button onclick="updateLight('{{ light }}', 'green')">Verde</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
